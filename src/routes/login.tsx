@@ -36,7 +36,7 @@ function Login() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const p = Creds.safeParse({ email, password });
-    if (!p.success) return toast.error(p.error.issues[0].message);
+    if (!p.success) return toast.error(p.error.issues[0]?.message ?? "Invalid input");
     setBusy(true);
     const { error, data } = mode === "signin"
       ? await supabase.auth.signInWithPassword(p.data)

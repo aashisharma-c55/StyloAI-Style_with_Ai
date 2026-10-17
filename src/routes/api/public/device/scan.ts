@@ -49,7 +49,7 @@ export const Route = createFileRoute("/api/public/device/scan")({
 
         await admin.from("scan_events").insert({
           user_id: device.user_id, device_id: device.id, uid: body.uid,
-          clothing_item_id: (item?.id as string) ?? null, event_type: body.event_type,
+          clothing_item_id: (item?.["id"] as string) ?? null, event_type: body.event_type,
           result: item ? "recognized" : "unknown_tag", is_simulated: false, request_id: body.request_id ?? null,
         });
 
