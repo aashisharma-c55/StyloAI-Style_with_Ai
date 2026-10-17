@@ -23,7 +23,7 @@ export type OutfitResponse = {
   weatherSuitability: string;
   missing: string[];
   alternatives: string[][];
-  notice?: string;
+  notice?: string | undefined;
 };
 
 const schema = {
@@ -57,7 +57,7 @@ export const generateOutfit = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not load wardrobe");
     const items = (rows ?? []) as (WardrobeItem & { brand: string | null; notes: string | null })[];
     const wearable = items.filter(isWearable);
-    const weather = { temperatureC: data.temperatureC, condition: data.condition, isRaining: data.isRaining };
+    const weather = { temperatureC: data.temperatureC, condition: data.condition ?? null, isRaining: data.isRaining };
 
     const rule = (notice?: string): OutfitResponse => {
       const r = recommendOutfit({ items, occasion: data.occasion, weather, preferredColors: data.preferredColors, style: data.style, variation: data.variation });

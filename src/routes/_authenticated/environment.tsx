@@ -45,12 +45,14 @@ function Env() {
     if (error) return toast.error("Couldn't add reading");
     setView("sim");
     qc.invalidateQueries({ queryKey: ["readings"] });
+    return undefined;
   }
   async function saveThresholds() {
     const { error } = await supabase.from("profiles").update({ humidity_threshold: hThr, temp_high_threshold: tThr }).eq("id", uid);
     if (error) return toast.error("Couldn't save");
     toast.success("Thresholds saved");
     qc.invalidateQueries({ queryKey: ["profile"] });
+    return undefined;
   }
 
   return (

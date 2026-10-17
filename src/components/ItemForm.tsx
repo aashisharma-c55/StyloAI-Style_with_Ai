@@ -51,12 +51,13 @@ export function ItemForm({ item, rfidUid }: { item?: Item; rfidUid?: string }) {
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const fl = e.target.files?.[0];
-    if (!fl) return;
+    if (!fl) return undefined;
     if (!TYPES.includes(fl.type)) return toast.error("Use a JPG, PNG or WebP image.");
     if (fl.size > MAX) return toast.error("Image must be under 5 MB.");
     setFile(fl);
     setPreview(URL.createObjectURL(fl));
     setRemoveImage(false);
+    return undefined;
   }
 
   async function submit(e: React.FormEvent) {
@@ -124,6 +125,7 @@ export function ItemForm({ item, rfidUid }: { item?: Item; rfidUid?: string }) {
     } finally {
       setProgress(null);
     }
+    return undefined;
   }
 
   const img = preview ?? existingUrl;
@@ -153,7 +155,7 @@ export function ItemForm({ item, rfidUid }: { item?: Item; rfidUid?: string }) {
           {item && <Field label="Availability" value={f.availability_status} onChange={(v) => set("availability_status", v)} options={AVAILABILITY} />}
           {item && <Field label="Laundry" value={f.laundry_status} onChange={(v) => set("laundry_status", v)} options={LAUNDRY} />}
         </div>
-        {(errors.category || errors.color) && <p className="text-xs text-destructive">{errors.category ?? errors.color}</p>}
+        {(errors["category"] || errors["color"]) && <p className="text-xs text-destructive">{errors["category"] ?? errors["color"]}</p>}
         <div className="space-y-2">
           <Label>Suitable occasions *</Label>
           <div className="flex flex-wrap gap-2">

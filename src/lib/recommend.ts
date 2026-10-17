@@ -15,7 +15,7 @@ export type WardrobeItem = {
 export type WeatherInput = {
   temperatureC: number | null;
   condition?: string | null;
-  isRaining?: boolean;
+  isRaining?: boolean | undefined;
 };
 
 export type RecommendInput = {
@@ -130,7 +130,7 @@ export function recommendOutfit(ctx: RecommendInput): RecommendResult {
   const weatherSuitability =
     band === "unknown"
       ? "No temperature provided — picked versatile pieces."
-      : `${band[0].toUpperCase() + band.slice(1)} weather (${ctx.weather.temperatureC}°C${ctx.weather.isRaining ? ", rain" : ""}).`;
+      : `${band.charAt(0).toUpperCase() + band.slice(1)} weather (${ctx.weather.temperatureC}°C${ctx.weather.isRaining ? ", rain" : ""}).`;
 
   const explanation = chosen.length
     ? `Chosen for ${ctx.occasion}: ${chosen.map((c) => `${c.color} ${c.name}`).join(", ")}. Items were ranked by occasion fit, season, your colour preferences and neutral pairing.`
