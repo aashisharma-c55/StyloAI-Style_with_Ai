@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedAddRouteImport } from './routes/_authenticated/add'
+import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
+import { Route as AuthenticatedOutfitsRouteImport } from './routes/_authenticated/outfits'
 import { Route as AuthenticatedWardrobeIndexRouteImport } from './routes/_authenticated/wardrobe/index'
 import { Route as AuthenticatedWardrobeIdRouteImport } from './routes/_authenticated/wardrobe/$id'
 import { Route as ApiPublicDeviceScanRouteImport } from './routes/api/public/device/scan'
@@ -35,6 +37,16 @@ const LoginRoute = LoginRouteImport.update({
 const AuthenticatedAddRoute = AuthenticatedAddRouteImport.update({
   id: '/add',
   path: '/add',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOutfitsRoute = AuthenticatedOutfitsRouteImport.update({
+  id: '/outfits',
+  path: '/outfits',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedWardrobeIndexRoute =
@@ -63,6 +75,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/add': typeof AuthenticatedAddRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/outfits': typeof AuthenticatedOutfitsRoute
   '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
   '/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
@@ -72,6 +86,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/add': typeof AuthenticatedAddRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/outfits': typeof AuthenticatedOutfitsRoute
   '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
   '/wardrobe': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
@@ -83,6 +99,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/add': typeof AuthenticatedAddRoute
+  '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/outfits': typeof AuthenticatedOutfitsRoute
   '/_authenticated/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
   '/_authenticated/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
@@ -94,6 +112,8 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/add'
+    | '/history'
+    | '/outfits'
     | '/wardrobe/$id'
     | '/wardrobe/'
     | '/api/public/device/scan'
@@ -103,6 +123,8 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/add'
+    | '/history'
+    | '/outfits'
     | '/wardrobe/$id'
     | '/wardrobe'
     | '/api/public/device/scan'
@@ -113,6 +135,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/_authenticated/add'
+    | '/_authenticated/history'
+    | '/_authenticated/outfits'
     | '/_authenticated/wardrobe/$id'
     | '/_authenticated/wardrobe/'
     | '/api/public/device/scan'
@@ -157,6 +181,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAddRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/history': {
+      id: '/_authenticated/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof AuthenticatedHistoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/outfits': {
+      id: '/_authenticated/outfits'
+      path: '/outfits'
+      fullPath: '/outfits'
+      preLoaderRoute: typeof AuthenticatedOutfitsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/wardrobe/': {
       id: '/_authenticated/wardrobe/'
       path: '/wardrobe'
@@ -190,12 +228,16 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAddRoute: typeof AuthenticatedAddRoute
+  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedOutfitsRoute: typeof AuthenticatedOutfitsRoute
   AuthenticatedWardrobeIdRoute: typeof AuthenticatedWardrobeIdRoute
   AuthenticatedWardrobeIndexRoute: typeof AuthenticatedWardrobeIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAddRoute: AuthenticatedAddRoute,
+  AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedOutfitsRoute: AuthenticatedOutfitsRoute,
   AuthenticatedWardrobeIdRoute: AuthenticatedWardrobeIdRoute,
   AuthenticatedWardrobeIndexRoute: AuthenticatedWardrobeIndexRoute,
 }

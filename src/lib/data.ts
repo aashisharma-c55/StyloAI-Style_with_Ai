@@ -115,3 +115,16 @@ export function useImageUrl(path: string | null | undefined) {
     },
   });
 }
+
+export function useOutfits(limit = 100) {
+  const uid = useUserId();
+  return useQuery({
+    queryKey: ["outfits", uid, limit], enabled: !!uid,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("outfit_recommendations").select("*").order("created_at", { ascending: false }).limit(limit);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+

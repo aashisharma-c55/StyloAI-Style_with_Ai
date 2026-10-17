@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { History, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useUserId } from "@/lib/auth";
-import { useItems } from "@/lib/data";
+import { useItems, useOutfits } from "@/lib/data";
 import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { ItemImage } from "@/components/ItemImage";
 import { Button } from "@/components/ui/button";
@@ -13,18 +12,6 @@ export const Route = createFileRoute("/_authenticated/history")({
   head: () => ({ meta: [{ title: "Outfit history — ClosetIQ" }, { name: "description", content: "Your saved and worn outfits." }, { property: "og:title", content: "Outfit history — ClosetIQ" }, { property: "og:description", content: "Saved outfits." }] }),
   component: HistoryPage,
 });
-
-export function useOutfits(limit = 100) {
-  const uid = useUserId();
-  return useQuery({
-    queryKey: ["outfits", uid, limit], enabled: !!uid,
-    queryFn: async () => {
-      const { data, error } = await supabase.from("outfit_recommendations").select("*").order("created_at", { ascending: false }).limit(limit);
-      if (error) throw error;
-      return data;
-    },
-  });
-}
 
 function HistoryPage() {
   const { data: outfits = [], isLoading } = useOutfits();
