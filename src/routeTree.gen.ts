@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicDeviceScanRouteImport } from './routes/api/public/device/scan'
+import { Route as ApiPublicDeviceSensorRouteImport } from './routes/api/public/device/sensor'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicDeviceScanRoute = ApiPublicDeviceScanRouteImport.update({
+  id: '/api/public/device/scan',
+  path: '/api/public/device/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDeviceSensorRoute = ApiPublicDeviceSensorRouteImport.update({
+  id: '/api/public/device/sensor',
+  path: '/api/public/device/sensor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
+  '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
+  '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
+  '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/public/device/scan' | '/api/public/device/sensor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/public/device/scan' | '/api/public/device/sensor'
+  id: '__root__' | '/' | '/api/public/device/scan' | '/api/public/device/sensor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicDeviceScanRoute: typeof ApiPublicDeviceScanRoute
+  ApiPublicDeviceSensorRoute: typeof ApiPublicDeviceSensorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/device/scan': {
+      id: '/api/public/device/scan'
+      path: '/api/public/device/scan'
+      fullPath: '/api/public/device/scan'
+      preLoaderRoute: typeof ApiPublicDeviceScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/device/sensor': {
+      id: '/api/public/device/sensor'
+      path: '/api/public/device/sensor'
+      fullPath: '/api/public/device/sensor'
+      preLoaderRoute: typeof ApiPublicDeviceSensorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicDeviceScanRoute: ApiPublicDeviceScanRoute,
+  ApiPublicDeviceSensorRoute: ApiPublicDeviceSensorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
