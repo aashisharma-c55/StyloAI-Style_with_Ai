@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedAddRouteImport } from './routes/_authenticated/add'
+import { Route as AuthenticatedEnvironmentRouteImport } from './routes/_authenticated/environment'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedOutfitsRouteImport } from './routes/_authenticated/outfits'
+import { Route as AuthenticatedRfidRouteImport } from './routes/_authenticated/rfid'
 import { Route as AuthenticatedWardrobeIndexRouteImport } from './routes/_authenticated/wardrobe/index'
 import { Route as AuthenticatedWardrobeIdRouteImport } from './routes/_authenticated/wardrobe/$id'
 import { Route as ApiPublicDeviceScanRouteImport } from './routes/api/public/device/scan'
@@ -39,6 +41,12 @@ const AuthenticatedAddRoute = AuthenticatedAddRouteImport.update({
   path: '/add',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedEnvironmentRoute =
+  AuthenticatedEnvironmentRouteImport.update({
+    id: '/environment',
+    path: '/environment',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -47,6 +55,11 @@ const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
 const AuthenticatedOutfitsRoute = AuthenticatedOutfitsRouteImport.update({
   id: '/outfits',
   path: '/outfits',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRfidRoute = AuthenticatedRfidRouteImport.update({
+  id: '/rfid',
+  path: '/rfid',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedWardrobeIndexRoute =
@@ -75,8 +88,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/add': typeof AuthenticatedAddRoute
+  '/environment': typeof AuthenticatedEnvironmentRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/outfits': typeof AuthenticatedOutfitsRoute
+  '/rfid': typeof AuthenticatedRfidRoute
   '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
   '/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
@@ -86,8 +101,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/add': typeof AuthenticatedAddRoute
+  '/environment': typeof AuthenticatedEnvironmentRoute
   '/history': typeof AuthenticatedHistoryRoute
   '/outfits': typeof AuthenticatedOutfitsRoute
+  '/rfid': typeof AuthenticatedRfidRoute
   '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
   '/wardrobe': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
@@ -99,8 +116,10 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/add': typeof AuthenticatedAddRoute
+  '/_authenticated/environment': typeof AuthenticatedEnvironmentRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
   '/_authenticated/outfits': typeof AuthenticatedOutfitsRoute
+  '/_authenticated/rfid': typeof AuthenticatedRfidRoute
   '/_authenticated/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
   '/_authenticated/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
@@ -112,8 +131,10 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/add'
+    | '/environment'
     | '/history'
     | '/outfits'
+    | '/rfid'
     | '/wardrobe/$id'
     | '/wardrobe/'
     | '/api/public/device/scan'
@@ -123,8 +144,10 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/add'
+    | '/environment'
     | '/history'
     | '/outfits'
+    | '/rfid'
     | '/wardrobe/$id'
     | '/wardrobe'
     | '/api/public/device/scan'
@@ -135,8 +158,10 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/_authenticated/add'
+    | '/_authenticated/environment'
     | '/_authenticated/history'
     | '/_authenticated/outfits'
+    | '/_authenticated/rfid'
     | '/_authenticated/wardrobe/$id'
     | '/_authenticated/wardrobe/'
     | '/api/public/device/scan'
@@ -181,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAddRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/environment': {
+      id: '/_authenticated/environment'
+      path: '/environment'
+      fullPath: '/environment'
+      preLoaderRoute: typeof AuthenticatedEnvironmentRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/history': {
       id: '/_authenticated/history'
       path: '/history'
@@ -193,6 +225,13 @@ declare module '@tanstack/react-router' {
       path: '/outfits'
       fullPath: '/outfits'
       preLoaderRoute: typeof AuthenticatedOutfitsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/rfid': {
+      id: '/_authenticated/rfid'
+      path: '/rfid'
+      fullPath: '/rfid'
+      preLoaderRoute: typeof AuthenticatedRfidRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/wardrobe/': {
@@ -228,16 +267,20 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAddRoute: typeof AuthenticatedAddRoute
+  AuthenticatedEnvironmentRoute: typeof AuthenticatedEnvironmentRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
   AuthenticatedOutfitsRoute: typeof AuthenticatedOutfitsRoute
+  AuthenticatedRfidRoute: typeof AuthenticatedRfidRoute
   AuthenticatedWardrobeIdRoute: typeof AuthenticatedWardrobeIdRoute
   AuthenticatedWardrobeIndexRoute: typeof AuthenticatedWardrobeIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAddRoute: AuthenticatedAddRoute,
+  AuthenticatedEnvironmentRoute: AuthenticatedEnvironmentRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
   AuthenticatedOutfitsRoute: AuthenticatedOutfitsRoute,
+  AuthenticatedRfidRoute: AuthenticatedRfidRoute,
   AuthenticatedWardrobeIdRoute: AuthenticatedWardrobeIdRoute,
   AuthenticatedWardrobeIndexRoute: AuthenticatedWardrobeIndexRoute,
 }
