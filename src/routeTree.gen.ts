@@ -10,33 +10,194 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedAddRouteImport } from './routes/_authenticated/add'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedEnvironmentRouteImport } from './routes/_authenticated/environment'
+import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
+import { Route as AuthenticatedOutfitsRouteImport } from './routes/_authenticated/outfits'
+import { Route as AuthenticatedRfidRouteImport } from './routes/_authenticated/rfid'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedWardrobeIndexRouteImport } from './routes/_authenticated/wardrobe/index'
+import { Route as AuthenticatedWardrobeIdRouteImport } from './routes/_authenticated/wardrobe/$id'
+import { Route as ApiPublicDeviceScanRouteImport } from './routes/api/public/device/scan'
+import { Route as ApiPublicDeviceSensorRouteImport } from './routes/api/public/device/sensor'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAddRoute = AuthenticatedAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedEnvironmentRoute =
+  AuthenticatedEnvironmentRouteImport.update({
+    id: '/environment',
+    path: '/environment',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedOutfitsRoute = AuthenticatedOutfitsRouteImport.update({
+  id: '/outfits',
+  path: '/outfits',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedRfidRoute = AuthenticatedRfidRouteImport.update({
+  id: '/rfid',
+  path: '/rfid',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedWardrobeIndexRoute =
+  AuthenticatedWardrobeIndexRouteImport.update({
+    id: '/wardrobe/',
+    path: '/wardrobe/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedWardrobeIdRoute = AuthenticatedWardrobeIdRouteImport.update({
+  id: '/wardrobe/$id',
+  path: '/wardrobe/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const ApiPublicDeviceScanRoute = ApiPublicDeviceScanRouteImport.update({
+  id: '/api/public/device/scan',
+  path: '/api/public/device/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDeviceSensorRoute = ApiPublicDeviceSensorRouteImport.update({
+  id: '/api/public/device/sensor',
+  path: '/api/public/device/sensor',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/add': typeof AuthenticatedAddRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/environment': typeof AuthenticatedEnvironmentRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/outfits': typeof AuthenticatedOutfitsRoute
+  '/rfid': typeof AuthenticatedRfidRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
+  '/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
+  '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
+  '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/add': typeof AuthenticatedAddRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/environment': typeof AuthenticatedEnvironmentRoute
+  '/history': typeof AuthenticatedHistoryRoute
+  '/outfits': typeof AuthenticatedOutfitsRoute
+  '/rfid': typeof AuthenticatedRfidRoute
+  '/settings': typeof AuthenticatedSettingsRoute
+  '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
+  '/wardrobe': typeof AuthenticatedWardrobeIndexRoute
+  '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
+  '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authenticated/add': typeof AuthenticatedAddRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/environment': typeof AuthenticatedEnvironmentRoute
+  '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/outfits': typeof AuthenticatedOutfitsRoute
+  '/_authenticated/rfid': typeof AuthenticatedRfidRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
+  '/_authenticated/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
+  '/_authenticated/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
+  '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
+  '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/add'
+    | '/dashboard'
+    | '/environment'
+    | '/history'
+    | '/outfits'
+    | '/rfid'
+    | '/settings'
+    | '/wardrobe/$id'
+    | '/wardrobe/'
+    | '/api/public/device/scan'
+    | '/api/public/device/sensor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/add'
+    | '/dashboard'
+    | '/environment'
+    | '/history'
+    | '/outfits'
+    | '/rfid'
+    | '/settings'
+    | '/wardrobe/$id'
+    | '/wardrobe'
+    | '/api/public/device/scan'
+    | '/api/public/device/sensor'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/add'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/environment'
+    | '/_authenticated/history'
+    | '/_authenticated/outfits'
+    | '/_authenticated/rfid'
+    | '/_authenticated/settings'
+    | '/_authenticated/wardrobe/$id'
+    | '/_authenticated/wardrobe/'
+    | '/api/public/device/scan'
+    | '/api/public/device/sensor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  ApiPublicDeviceScanRoute: typeof ApiPublicDeviceScanRoute
+  ApiPublicDeviceSensorRoute: typeof ApiPublicDeviceSensorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +209,134 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/add': {
+      id: '/_authenticated/add'
+      path: '/add'
+      fullPath: '/add'
+      preLoaderRoute: typeof AuthenticatedAddRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/environment': {
+      id: '/_authenticated/environment'
+      path: '/environment'
+      fullPath: '/environment'
+      preLoaderRoute: typeof AuthenticatedEnvironmentRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/history': {
+      id: '/_authenticated/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof AuthenticatedHistoryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/outfits': {
+      id: '/_authenticated/outfits'
+      path: '/outfits'
+      fullPath: '/outfits'
+      preLoaderRoute: typeof AuthenticatedOutfitsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/rfid': {
+      id: '/_authenticated/rfid'
+      path: '/rfid'
+      fullPath: '/rfid'
+      preLoaderRoute: typeof AuthenticatedRfidRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/wardrobe/': {
+      id: '/_authenticated/wardrobe/'
+      path: '/wardrobe'
+      fullPath: '/wardrobe/'
+      preLoaderRoute: typeof AuthenticatedWardrobeIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/wardrobe/$id': {
+      id: '/_authenticated/wardrobe/$id'
+      path: '/wardrobe/$id'
+      fullPath: '/wardrobe/$id'
+      preLoaderRoute: typeof AuthenticatedWardrobeIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/public/device/scan': {
+      id: '/api/public/device/scan'
+      path: '/api/public/device/scan'
+      fullPath: '/api/public/device/scan'
+      preLoaderRoute: typeof ApiPublicDeviceScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/device/sensor': {
+      id: '/api/public/device/sensor'
+      path: '/api/public/device/sensor'
+      fullPath: '/api/public/device/sensor'
+      preLoaderRoute: typeof ApiPublicDeviceSensorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedAddRoute: typeof AuthenticatedAddRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedEnvironmentRoute: typeof AuthenticatedEnvironmentRoute
+  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedOutfitsRoute: typeof AuthenticatedOutfitsRoute
+  AuthenticatedRfidRoute: typeof AuthenticatedRfidRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedWardrobeIdRoute: typeof AuthenticatedWardrobeIdRoute
+  AuthenticatedWardrobeIndexRoute: typeof AuthenticatedWardrobeIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAddRoute: AuthenticatedAddRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedEnvironmentRoute: AuthenticatedEnvironmentRoute,
+  AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedOutfitsRoute: AuthenticatedOutfitsRoute,
+  AuthenticatedRfidRoute: AuthenticatedRfidRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
+  AuthenticatedWardrobeIdRoute: AuthenticatedWardrobeIdRoute,
+  AuthenticatedWardrobeIndexRoute: AuthenticatedWardrobeIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  ApiPublicDeviceScanRoute: ApiPublicDeviceScanRoute,
+  ApiPublicDeviceSensorRoute: ApiPublicDeviceSensorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
