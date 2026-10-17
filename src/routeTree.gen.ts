@@ -10,6 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedAddRouteImport } from './routes/_authenticated/add'
+import { Route as AuthenticatedWardrobeIndexRouteImport } from './routes/_authenticated/wardrobe/index'
+import { Route as AuthenticatedWardrobeIdRouteImport } from './routes/_authenticated/wardrobe/$id'
 import { Route as ApiPublicDeviceScanRouteImport } from './routes/api/public/device/scan'
 import { Route as ApiPublicDeviceSensorRouteImport } from './routes/api/public/device/sensor'
 
@@ -17,6 +22,31 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAddRoute = AuthenticatedAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedWardrobeIndexRoute =
+  AuthenticatedWardrobeIndexRouteImport.update({
+    id: '/wardrobe/',
+    path: '/wardrobe/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedWardrobeIdRoute = AuthenticatedWardrobeIdRouteImport.update({
+  id: '/wardrobe/$id',
+  path: '/wardrobe/$id',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const ApiPublicDeviceScanRoute = ApiPublicDeviceScanRouteImport.update({
   id: '/api/public/device/scan',
@@ -31,30 +61,68 @@ const ApiPublicDeviceSensorRoute = ApiPublicDeviceSensorRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/add': typeof AuthenticatedAddRoute
+  '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
+  '/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
   '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/add': typeof AuthenticatedAddRoute
+  '/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
+  '/wardrobe': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
   '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_authenticated/add': typeof AuthenticatedAddRoute
+  '/_authenticated/wardrobe/$id': typeof AuthenticatedWardrobeIdRoute
+  '/_authenticated/wardrobe/': typeof AuthenticatedWardrobeIndexRoute
   '/api/public/device/scan': typeof ApiPublicDeviceScanRoute
   '/api/public/device/sensor': typeof ApiPublicDeviceSensorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/device/scan' | '/api/public/device/sensor'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/add'
+    | '/wardrobe/$id'
+    | '/wardrobe/'
+    | '/api/public/device/scan'
+    | '/api/public/device/sensor'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/device/scan' | '/api/public/device/sensor'
-  id: '__root__' | '/' | '/api/public/device/scan' | '/api/public/device/sensor'
+  to:
+    | '/'
+    | '/login'
+    | '/add'
+    | '/wardrobe/$id'
+    | '/wardrobe'
+    | '/api/public/device/scan'
+    | '/api/public/device/sensor'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/_authenticated/add'
+    | '/_authenticated/wardrobe/$id'
+    | '/_authenticated/wardrobe/'
+    | '/api/public/device/scan'
+    | '/api/public/device/sensor'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
   ApiPublicDeviceScanRoute: typeof ApiPublicDeviceScanRoute
   ApiPublicDeviceSensorRoute: typeof ApiPublicDeviceSensorRoute
 }
@@ -67,6 +135,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/add': {
+      id: '/_authenticated/add'
+      path: '/add'
+      fullPath: '/add'
+      preLoaderRoute: typeof AuthenticatedAddRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/wardrobe/': {
+      id: '/_authenticated/wardrobe/'
+      path: '/wardrobe'
+      fullPath: '/wardrobe/'
+      preLoaderRoute: typeof AuthenticatedWardrobeIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/wardrobe/$id': {
+      id: '/_authenticated/wardrobe/$id'
+      path: '/wardrobe/$id'
+      fullPath: '/wardrobe/$id'
+      preLoaderRoute: typeof AuthenticatedWardrobeIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/api/public/device/scan': {
       id: '/api/public/device/scan'
@@ -85,8 +188,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteChildren {
+  AuthenticatedAddRoute: typeof AuthenticatedAddRoute
+  AuthenticatedWardrobeIdRoute: typeof AuthenticatedWardrobeIdRoute
+  AuthenticatedWardrobeIndexRoute: typeof AuthenticatedWardrobeIndexRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAddRoute: AuthenticatedAddRoute,
+  AuthenticatedWardrobeIdRoute: AuthenticatedWardrobeIdRoute,
+  AuthenticatedWardrobeIndexRoute: AuthenticatedWardrobeIndexRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
   ApiPublicDeviceScanRoute: ApiPublicDeviceScanRoute,
   ApiPublicDeviceSensorRoute: ApiPublicDeviceSensorRoute,
 }

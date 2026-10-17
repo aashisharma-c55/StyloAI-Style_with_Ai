@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { label } from "@/lib/constants";
 
 export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
   return (
@@ -25,4 +26,9 @@ export function EmptyState({ icon, title, body, action }: { icon: ReactNode; tit
 
 export function SimBadge() {
   return <span className="rounded-full bg-warning px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warning-foreground">Simulated</span>;
+}
+
+export function StatusBadge({ s }: { s: string }) {
+  const cls = s === "available" ? "bg-accent text-accent-foreground" : s === "in_use" ? "bg-warning text-warning-foreground" : "bg-muted text-muted-foreground";
+  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{label(s)}</span>;
 }

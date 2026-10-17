@@ -6,7 +6,7 @@ import { Grid2x2, List, Plus, Radio, Search, Shirt, Trash2 } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client";
 import { useItems, useTags, type Item } from "@/lib/data";
 import { CATEGORIES, COLORS, OCCASIONS, AVAILABILITY, label } from "@/lib/constants";
-import { PageHeader, EmptyState } from "@/components/PageHeader";
+import { PageHeader, EmptyState, StatusBadge } from "@/components/PageHeader";
 import { ItemImage } from "@/components/ItemImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,9 +140,4 @@ function Wardrobe() {
       </AlertDialog>
     </>
   );
-}
-
-export function StatusBadge({ s }: { s: string }) {
-  const cls = s === "available" ? "bg-accent text-accent-foreground" : s === "in_use" ? "bg-warning text-warning-foreground" : "bg-muted text-muted-foreground";
-  return <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${cls}`}>{label(s)}</span>;
 }
