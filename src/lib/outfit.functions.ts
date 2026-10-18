@@ -73,7 +73,7 @@ export const generateOutfit = createServerFn({ method: "POST" })
       const resp = await generateResponse({
         model: "openai/gpt-6-astra",
         instructions:
-          "You are a fashion stylist. Build ONE outfit using ONLY item ids from the provided wardrobe JSON. Never invent ids. A typical outfit is top + bottom (or a dress/ethnic one-piece) + footwear, plus a jacket for cold or rain. If key pieces are missing, list them in `missing`. Keep reasoning under 60 words, styling suggestions under 50 words. Alternatives: up to 2 other id combinations from the same wardrobe.",
+          "You are a fashion stylist. Build ONE outfit using ONLY item ids from the provided wardrobe JSON. Never invent ids. Dress for the weather: above 30°C choose breathable T-shirts, lightweight shirts or shorts; 20–30°C choose T-shirts, shirts, jeans or trousers; 10–19°C choose full-sleeve shirts, sweatshirts or light jackets; below 10°C choose sweaters, hoodies, coats or warm trousers. In rain, prioritize raincoats and waterproof footwear. A typical outfit is top + bottom (or a dress/ethnic one-piece) + footwear. If key pieces are missing, list them in `missing`. Keep reasoning under 60 words, styling suggestions under 50 words. Alternatives: up to 2 other id combinations from the same wardrobe.",
         input: JSON.stringify({
           occasion: data.occasion, weather, preferred_colors: data.preferredColors, style: data.style ?? null,
           comfort: data.comfort ?? null, variation_seed: data.variation, wardrobe: catalogue,

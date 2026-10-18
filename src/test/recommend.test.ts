@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { recommendOutfit, type WardrobeItem } from "@/lib/recommend";
+import { recommendOutfit, weatherBand, type WardrobeItem } from "@/lib/recommend";
 
 const base = (o: Partial<WardrobeItem> & { id: string; category: string }): WardrobeItem => ({
   name: o.id, color: "black", season: "all", occasions: ["casual"],
@@ -31,5 +31,27 @@ describe("rule-based recommendation", () => {
     const r = recommendOutfit({ items, occasion: "casual", weather: { temperatureC: 8 } });
     expect(r.missing).toContain("a jacket for cooler weather");
     expect(r.itemIds).toEqual(["t", "b", "s"]);
+  });
+
+  it("uses the requested temperature boundaries for clothing advice", () => {
+    expect(weatherBand({ temperatureC: 31 })).toBe("hot");
+    expect(weatherBand({ temperatureC: 30 })).toBe("warm");
+    expect(weatherBand({ temperatureC: 20 })).toBe("warm");
+    expect(weatherBand({ temperatureC: 19 })).toBe("cool");
+    expect(weatherBand({ temperatureC: 10 })).toBe("cool");
+    expect(weatherBand({ temperatureC: 9 })).toBe("cold");
+  });
+
+  it("prefers a raincoat over an ordinary jacket during rain", () => {
+    const items = [
+      base({ id: "shirt", category: "shirts" }),
+      base({ id: "jeans", category: "jeans" }),
+      base({ id: "shoes", category: "footwear" }),
+      base({ id: "ordinary", category: "jackets", name: "Everyday jacket" }),
+      base({ id: "raincoat", category: "jackets", name: "Waterproof raincoat" }),
+    ];
+    const r = recommendOutfit({ items, occasion: "casual", weather: { temperatureC: 16, isRaining: true } });
+    expect(r.itemIds).toContain("raincoat");
+    expect(r.itemIds).not.toContain("ordinary");
   });
 });
