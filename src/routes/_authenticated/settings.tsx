@@ -72,7 +72,7 @@ function SettingsPage() {
         <section className="space-y-4 rounded-2xl border bg-card p-6">
           <h2 className="text-xl">Profile & weather</h2>
           <div><Label>Display name</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
-          <div><Label>City for live weather</Label><Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Mumbai" /><p className="mt-1 text-xs text-muted-foreground">Weather by Open-Meteo. You can always enter weather manually on the outfit page.</p></div>
+          <div><Label>City for live weather</Label><Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Mumbai" /><p className="mt-1 text-xs text-muted-foreground">Live weather, humidity and rain forecast power outfit suggestions. You can always enter weather manually on the outfit page.</p></div>
           <Button onClick={save} disabled={busy}>{busy ? "Saving…" : "Save"}</Button>
         </section>
         <section className="space-y-4 rounded-2xl border bg-card p-6">

@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { CloudSun, RefreshCw, Save, Sparkles, Check, AlertTriangle, Shirt } from "lucide-react";
+import { CloudRain, CloudSun, Droplets, RefreshCw, Save, Sparkles, Check, AlertTriangle, Shirt, Wind } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserId } from "@/lib/auth";
 import { useItems, useProfile, useWeatherForProfile } from "@/lib/data";
 import { generateOutfit, type OutfitResponse } from "@/lib/outfit.functions";
-import { getWeather } from "@/lib/weather.functions";
+import { getWeather, type WeatherResult } from "@/lib/weather.functions";
 import { COLORS, label } from "@/lib/constants";
 import { PageHeader, EmptyState } from "@/components/PageHeader";
 import { ItemImage } from "@/components/ItemImage";
@@ -42,6 +42,8 @@ function Outfits() {
   const [rain, setRain] = useState(false);
   const [city, setCity] = useState("");
   const [weatherSrc, setWeatherSrc] = useState<string>("Manual");
+  const [weatherDetails, setWeatherDetails] = useState<Extract<WeatherResult, { ok: true }> | null>(null);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
   const [colors, setColors] = useState<string[]>([]);
   const [style, setStyle] = useState("");
   const [comfort, setComfort] = useState("");
@@ -56,6 +58,9 @@ function Outfits() {
     if (liveWeather?.ok && temp === "") {
       setTemp(String(liveWeather.temperatureC)); setCond(liveWeather.condition); setRain(liveWeather.isRaining);
       setWeatherSrc(`${liveWeather.source} · ${liveWeather.location} · ${new Date(liveWeather.fetchedAt).toLocaleTimeString()}`);
+      setWeatherDetails(liveWeather);
+    } else if (liveWeather && !liveWeather.ok) {
+      setWeatherError(liveWeather.error);
     }
   }, [liveWeather]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (profile?.location_name && !city) setCity(profile.location_name); }, [profile]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -65,7 +70,13 @@ function Outfits() {
     setWBusy(true);
     const w = await fetchWeather({ data: { location: city } }).catch(() => null);
     setWBusy(false);
-    if (!w || !w.ok) return toast.error(w && !w.ok ? w.error : "Weather unavailable — enter it manually.");
+    if (!w || !w.ok) {
+      const message = w && !w.ok ? w.error : "Couldn't reach the weather service. Please retry or enter weather manually.";
+      setWeatherError(message);
+      return toast.error(message);
+    }
+    setWeatherError(null);
+    setWeatherDetails(w);
     setTemp(String(w.temperatureC)); setCond(w.condition); setRain(w.isRaining);
     setWeatherSrc(`${w.source} · ${w.location} · ${new Date(w.fetchedAt).toLocaleTimeString()}`);
   }
@@ -128,17 +139,32 @@ function Outfits() {
             </div>
             {occasion === "Custom" && <Input value={custom} onChange={(e) => setCustom(e.target.value)} placeholder="e.g. Job interview" maxLength={50} />}
           </div>
-          <div className="space-y-2 rounded-xl bg-secondary/60 p-4">
-            <Label className="flex items-center gap-2"><CloudSun className="h-4 w-4" />Weather</Label>
+          <div className="space-y-3 rounded-xl bg-secondary/60 p-4">
+            <Label className="flex items-center gap-2"><CloudSun className="h-4 w-4" />Weather & outfit suggestions</Label>
             <div className="flex gap-2">
               <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" />
-              <Button variant="outline" onClick={loadWeather} disabled={wBusy}>{wBusy ? "…" : "Fetch"}</Button>
+              <Button variant="outline" onClick={loadWeather} disabled={wBusy} aria-label={weatherDetails ? "Refresh weather" : "Fetch weather"}>{wBusy ? <RefreshCw className="h-4 w-4 animate-spin" /> : <><RefreshCw className="mr-1 h-4 w-4" />{weatherDetails ? "Refresh" : "Fetch"}</>}</Button>
             </div>
+            {wBusy && <p className="text-sm text-muted-foreground">Updating local weather…</p>}
+            {weatherError && <div role="alert" className="space-y-2 text-sm text-destructive"><p>{weatherError}</p><Button size="sm" variant="outline" onClick={loadWeather} disabled={wBusy}>Try again</Button></div>}
+            {weatherDetails && weatherSrc !== "Manual" && (
+              <div className="space-y-3 border-y py-3">
+                <div className="flex items-center gap-3">
+                  <img src={weatherDetails.icon} alt="" className="h-12 w-12" />
+                  <div><p className="font-display text-3xl">{weatherDetails.temperatureC}°C</p><p className="text-sm text-muted-foreground">{weatherDetails.condition} · {weatherDetails.location}</p></div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <p className="flex items-center gap-1"><Droplets className="h-3.5 w-3.5" />{weatherDetails.humidity}% humidity</p>
+                  <p className="flex items-center gap-1"><Wind className="h-3.5 w-3.5" />{weatherDetails.windKph} km/h</p>
+                  <p className="flex items-center gap-1"><CloudRain className="h-3.5 w-3.5" />{weatherDetails.rainChance}% rain</p>
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-2">
-              <Input type="number" value={temp} onChange={(e) => { setTemp(e.target.value); setWeatherSrc("Manual"); }} placeholder="°C" aria-label="Temperature °C" />
-              <Input value={cond} onChange={(e) => { setCond(e.target.value); setWeatherSrc("Manual"); }} placeholder="Condition" aria-label="Condition" />
+              <Input type="number" value={temp} onChange={(e) => { setTemp(e.target.value); setWeatherSrc("Manual"); setWeatherDetails(null); setWeatherError(null); }} placeholder="°C" aria-label="Temperature °C" />
+              <Input value={cond} onChange={(e) => { setCond(e.target.value); setWeatherSrc("Manual"); setWeatherDetails(null); setWeatherError(null); }} placeholder="Condition" aria-label="Condition" />
             </div>
-            <label className="flex items-center justify-between text-sm">Raining<Switch checked={rain} onCheckedChange={(v) => { setRain(v); setWeatherSrc("Manual"); }} /></label>
+            <label className="flex items-center justify-between text-sm">Raining<Switch checked={rain} onCheckedChange={(v) => { setRain(v); setWeatherSrc("Manual"); setWeatherDetails(null); setWeatherError(null); }} /></label>
             <p className="text-xs text-muted-foreground">Source: {weatherSrc}</p>
           </div>
           <div className="space-y-2">

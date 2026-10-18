@@ -42,18 +42,41 @@ export function isWearable(i: WardrobeItem) {
   return i.availability_status === "available" && i.laundry_status === "clean";
 }
 
-export function weatherBand(w: WeatherInput): "hot" | "warm" | "mild" | "cold" | "unknown" {
+export function weatherBand(w: WeatherInput): "hot" | "warm" | "cool" | "cold" | "unknown" {
   const t = w.temperatureC;
   if (t == null || Number.isNaN(t)) return "unknown";
-  if (t >= 30) return "hot";
-  if (t >= 22) return "warm";
-  if (t >= 15) return "mild";
+  if (t > 30) return "hot";
+  if (t >= 20) return "warm";
+  if (t >= 10) return "cool";
   return "cold";
 }
 
 export function needsOuterwear(w: WeatherInput) {
   const band = weatherBand(w);
-  return band === "cold" || band === "mild" || !!w.isRaining;
+  return band === "cold" || band === "cool" || !!w.isRaining;
+}
+
+function weatherFit(item: WardrobeItem, band: ReturnType<typeof weatherBand>, isRaining: boolean | undefined) {
+  const text = `${item.name} ${item.category}`.toLowerCase();
+  let fit = 0;
+  const matches = (terms: string[]) => terms.some((term) => text.includes(term));
+  if (band === "hot") {
+    if (matches(["t-shirt", "tshirt", "tee", "shorts", "lightweight", "linen", "breathable"])) fit += 5;
+    if (matches(["sweater", "hoodie", "coat", "heavy", "wool"])) fit -= 5;
+  } else if (band === "warm") {
+    if (matches(["t-shirt", "tshirt", "tee", "shirt", "jeans", "trouser"])) fit += 3;
+  } else if (band === "cool") {
+    if (matches(["full sleeve", "full-sleeve", "sweatshirt", "light jacket", "jacket", "cardigan"])) fit += 5;
+    if (matches(["shorts", "sleeveless"])) fit -= 4;
+  } else if (band === "cold") {
+    if (matches(["sweater", "hoodie", "coat", "thermal", "warm", "wool", "jacket"])) fit += 5;
+    if (matches(["shorts", "sleeveless", "linen"])) fit -= 5;
+  }
+  if (isRaining) {
+    if (matches(["raincoat", "rain coat", "waterproof", "umbrella", "rain jacket", "rain boots"])) fit += 8;
+    if (matches(["sandal", "suede"])) fit -= 3;
+  }
+  return fit;
 }
 
 function score(item: WardrobeItem, ctx: RecommendInput, band: ReturnType<typeof weatherBand>) {
@@ -67,10 +90,11 @@ function score(item: WardrobeItem, ctx: RecommendInput, band: ReturnType<typeof 
     if (item.season === "summer") s += 3;
     if (item.season === "winter") s -= 4;
   }
-  if (band === "cold") {
+  if (band === "cold" || band === "cool") {
     if (item.season === "winter") s += 3;
     if (item.season === "summer") s -= 2;
   }
+  s += weatherFit(item, band, ctx.weather.isRaining);
   if (ctx.weather.isRaining && item.season === "monsoon") s += 2;
   if (ctx.preferredColors?.map((c) => c.toLowerCase()).includes(item.color.toLowerCase())) s += 3;
   if (NEUTRALS.includes(item.color.toLowerCase())) s += 1;

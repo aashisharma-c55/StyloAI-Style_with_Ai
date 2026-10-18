@@ -15,4 +15,4 @@
 - ESP32 hardware calls `/api/public/device/*` authenticated by per-device keys (only SHA-256 hash stored) — separate from user auth.
 - Simulated scans/readings carry `is_simulated = true` and are never mixed with hardware data in the UI.
 - `src/lib/recommend.ts` is the pure rule-based engine and the fallback when AI fails; AI item IDs are always validated against the user's wardrobe.
-- Weather uses Open-Meteo (keyless) via a server function.
+- Live weather is fetched from WeatherAPI through a server function, with its credential read only inside the server handler to keep it out of browser code.

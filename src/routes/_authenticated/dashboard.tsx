@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, CloudSun, Shirt, Sparkles } from "lucide-react";
+import { AlertTriangle, CloudRain, CloudSun, Droplets, Shirt, Sparkles, Wind } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useDevices, useItems, useOutfits, useProfile, useReadings, useScans, useWeatherForProfile } from "@/lib/data";
 import { DEVICE_ONLINE_MS, label } from "@/lib/constants";
@@ -51,7 +51,7 @@ function Dashboard() {
         {stats.map(([l, v]) => <div key={l} className="rounded-2xl border bg-card p-5"><p className="text-xs uppercase tracking-wide text-muted-foreground">{l}</p><p className="mt-1 font-display text-4xl">{v}</p></div>)}
         <div className="rounded-2xl border bg-card p-5">
           <p className="flex items-center gap-1 text-xs uppercase tracking-wide text-muted-foreground"><CloudSun className="h-3.5 w-3.5" />Weather</p>
-          {weather?.ok ? <><p className="mt-1 font-display text-4xl">{weather.temperatureC}°C</p><p className="text-xs text-muted-foreground">{weather.condition} · {weather.location}</p></>
+          {weather?.ok ? <><div className="flex items-center gap-2">{weather.icon && <img src={weather.icon} alt="" className="h-10 w-10" />}<p className="mt-1 font-display text-4xl">{weather.temperatureC}°C</p></div><p className="text-xs text-muted-foreground">{weather.condition} · {weather.location}</p><div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground"><span className="inline-flex items-center gap-1"><Droplets className="h-3 w-3" />{weather.humidity}%</span><span className="inline-flex items-center gap-1"><Wind className="h-3 w-3" />{weather.windKph} km/h</span><span className="inline-flex items-center gap-1"><CloudRain className="h-3 w-3" />{weather.rainChance}% rain</span></div></>
             : <p className="mt-2 text-sm text-muted-foreground">{weather && !weather.ok ? weather.error : <Link to="/settings" className="underline">Set your city</Link>}</p>}
         </div>
       </div>
