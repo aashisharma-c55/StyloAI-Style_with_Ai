@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
- 
+
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
@@ -20,9 +20,9 @@ export const Route = createFileRoute("/login")({
   }),
   component: Login,
 });
- 
+
 const Creds = z.object({ email: z.string().trim().email("Enter a valid email"), password: z.string().min(8, "Password must be at least 8 characters") });
- 
+
 function Login() {
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -31,7 +31,7 @@ function Login() {
   const { session } = useAuth();
   const nav = useNavigate();
   useEffect(() => { if (session) nav({ to: "/dashboard" }); }, [session, nav]);
- 
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const p = Creds.safeParse({ email, password });
@@ -44,33 +44,46 @@ function Login() {
     if (error) return toast.error(error.message);
     if (mode === "signup" && !data.session) toast.success("Check your email to confirm your account.");
   }
- 
+
   async function oauth(provider: "google") {
     const r = await lovable.auth.signInWithOAuth(provider, { redirect_uri: window.location.origin + "/login" });
     if (r.error) toast.error(r.error.message ?? "Sign-in failed");
   }
- 
+
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
-      <div className="w-full max-w-sm rounded-2xl border bg-card p-8 shadow-sm">
-        <Link to="/" className="font-display text-2xl">ClosetIQ</Link>
-        <h1 className="mt-6 text-2xl">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
-        <form onSubmit={submit} className="mt-6 space-y-4">
-          <div className="space-y-1.5"><Label htmlFor="email">Email</Label><Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-          <div className="space-y-1.5"><Label htmlFor="pw">Password</Label><Input id="pw" type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} value={password} onChange={(e) => setPassword(e.target.value)} /></div>
-          <Button className="w-full" disabled={busy}>{busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}</Button>
-        </form>
-        <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or<span className="h-px flex-1 bg-border" /></div>
-        <div className="space-y-2">
-          <Button variant="outline" className="w-full" onClick={() => oauth("google")}>Continue with Google</Button>
+    <div className="flex min-h-screen flex-col">
+      <main className="flex flex-1 items-center justify-center px-4 py-8">
+        <div className="w-full max-w-sm rounded-2xl border bg-card p-8 shadow-sm">
+          <Link to="/" className="font-display text-2xl">ClosetIQ</Link>
+          <h1 className="mt-6 text-2xl">{mode === "signin" ? "Welcome back" : "Create your account"}</h1>
+          <form onSubmit={submit} className="mt-6 space-y-4">
+            <div className="space-y-1.5"><Label htmlFor="email">Email</Label><Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
+            <div className="space-y-1.5"><Label htmlFor="pw">Password</Label><Input id="pw" type="password" autoComplete={mode === "signin" ? "current-password" : "new-password"} value={password} onChange={(e) => setPassword(e.target.value)} /></div>
+            <Button className="w-full" disabled={busy}>{busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Sign up"}</Button>
+          </form>
+          <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground"><span className="h-px flex-1 bg-border" />or<span className="h-px flex-1 bg-border" /></div>
+          <div className="space-y-2">
+            <Button variant="outline" className="w-full" onClick={() => oauth("google")}>Continue with Google</Button>
+          </div>
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            {mode === "signin" ? "New to ClosetIQ?" : "Already have an account?"}{" "}
+            <button className="font-semibold text-foreground underline-offset-4 hover:underline" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>
+              {mode === "signin" ? "Create account" : "Sign in"}
+            </button>
+          </p>
         </div>
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          {mode === "signin" ? "New to ClosetIQ?" : "Already have an account?"}{" "}
-          <button className="font-semibold text-foreground underline-offset-4 hover:underline" onClick={() => setMode(mode === "signin" ? "signup" : "signin")}>
-            {mode === "signin" ? "Create account" : "Sign in"}
-          </button>
+      </main>
+      <footer className="border-t px-4 py-5 text-center text-xs text-muted-foreground">
+        <p className="font-display text-sm text-foreground">ClosetIQ</p>
+        <p className="mt-1">Your AI-powered smart wardrobe and outfit recommendations.</p>
+        <p className="mt-2">
+          Contact:{" "}
+          <a href="mailto:aashi.sharmac55@gmail.com" className="underline-offset-4 hover:text-foreground hover:underline">
+            aashi.sharmac55@gmail.com
+          </a>
         </p>
-      </div>
+        <p className="mt-2">© {new Date().getFullYear()} ClosetIQ. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
