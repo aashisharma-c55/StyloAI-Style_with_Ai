@@ -25,14 +25,14 @@ function Landing() {
     { icon: Thermometer, t: "Wardrobe climate", d: "Humidity alerts protect fabrics from damp." },
   ];
   return (
-    <div className="min-h-screen">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <div className="flex min-h-screen flex-col">
+      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
         <span className="font-display text-2xl">ClosetIQ</span>
         <Button asChild variant={session ? "default" : "outline"}>
           <Link to={session ? "/dashboard" : "/login"}>{session ? "Open dashboard" : "Sign in"}</Link>
         </Button>
       </header>
-      <main className="mx-auto grid max-w-6xl items-center gap-12 px-6 pb-20 pt-8 lg:grid-cols-2">
+      <main className="mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-6 pb-20 pt-8 lg:grid-cols-2">
         <div>
           <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-sage">Smart wardrobe</p>
           <h1 className="text-5xl leading-[1.05] sm:text-6xl">Your closet, <em className="text-sage">thinking</em> with you.</h1>
@@ -53,6 +53,17 @@ function Landing() {
         </div>
         <img src={hero} alt="An organised wardrobe in neutral tones" className="aspect-square w-full rounded-3xl object-cover shadow-sm" />
       </main>
+      <footer className="border-t px-6 py-8 text-center text-xs text-muted-foreground">
+        <p className="font-display text-base text-foreground">ClosetIQ</p>
+        <p className="mt-1">Your AI-powered smart wardrobe and outfit recommendations.</p>
+        <p className="mt-3">
+          Contact:{" "}
+          <a href="mailto:aashi.sharmac55@gmail.com" className="underline-offset-4 hover:text-foreground hover:underline">
+            aashi.sharmac55@gmail.com
+          </a>
+        </p>
+        <p className="mt-3">© {new Date().getFullYear()} ClosetIQ. All rights reserved.</p>
+      </footer>
     </div>
   );
 }
