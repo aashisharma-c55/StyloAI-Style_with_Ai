@@ -26,25 +26,54 @@ export type OutfitResponse = {
   notice?: string | undefined;
 };
 
-const schema = {
-  type: "object",
-  additionalProperties: false,
+// Gemini response schema (OpenAPI subset: no additionalProperties).
+const geminiSchema = {
+  type: "OBJECT",
   required: ["selected_item_ids", "reasoning", "styling_suggestions", "weather_suitability", "missing", "alternatives"],
   properties: {
-    selected_item_ids: { type: "array", items: { type: "string" } },
-    reasoning: { type: "string" },
-    styling_suggestions: { type: "string" },
-    weather_suitability: { type: "string" },
-    missing: { type: "array", items: { type: "string" } },
-    alternatives: { type: "array", items: { type: "array", items: { type: "string" } } },
+    selected_item_ids: { type: "ARRAY", items: { type: "STRING" } },
+    reasoning: { type: "STRING" },
+    styling_suggestions: { type: "STRING" },
+    weather_suitability: { type: "STRING" },
+    missing: { type: "ARRAY", items: { type: "STRING" } },
+    alternatives: { type: "ARRAY", items: { type: "ARRAY", items: { type: "STRING" } } },
   },
 } as const;
 
-function extractText(resp: unknown): string {
-  const r = resp as { output_text?: string; output?: { type: string; content?: { type: string; text?: string }[] }[] };
-  if (typeof r.output_text === "string" && r.output_text) return r.output_text;
-  for (const o of r.output ?? []) for (const c of o.content ?? []) if (c.type === "output_text" && c.text) return c.text;
-  return "";
+const INSTRUCTIONS =
+  "You are a fashion stylist. Build ONE outfit using ONLY item ids from the provided wardrobe JSON. Never invent ids. Dress for the weather: above 30°C choose breathable T-shirts, lightweight shirts or shorts; 20–30°C choose T-shirts, shirts, jeans or trousers; 10–19°C choose full-sleeve shirts, sweatshirts or light jackets; below 10°C choose sweaters, hoodies, coats or warm trousers. In rain, prioritize raincoats and waterproof footwear. A typical outfit is top + bottom (or a dress/ethnic one-piece) + footwear. If key pieces are missing, list them in `missing`. Keep reasoning under 60 words, styling suggestions under 50 words. Alternatives: up to 2 other id combinations from the same wardrobe.";
+
+class GeminiError extends Error {
+  status: number;
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "GeminiError";
+    this.status = status;
+  }
+}
+
+async function callGemini(apiKey: string, userInput: string): Promise<string> {
+  const model = process.env["GEMINI_MODEL"] || "gemini-2.5-flash";
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: INSTRUCTIONS }] },
+        contents: [{ role: "user", parts: [{ text: userInput }] }],
+        generationConfig: { responseMimeType: "application/json", responseSchema: geminiSchema },
+      }),
+      signal: AbortSignal.timeout(25000),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new GeminiError(res.status, body.slice(0, 300));
+  }
+  const json = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+  const parts = json.candidates?.[0]?.content?.parts ?? [];
+  return parts.map((p) => p.text ?? "").join("");
 }
 
 export const generateOutfit = createServerFn({ method: "POST" })
@@ -65,22 +94,19 @@ export const generateOutfit = createServerFn({ method: "POST" })
     };
 
     if (!data.useAi || wearable.length < 2) return rule(wearable.length < 2 ? "Too few available items for AI styling." : undefined);
-    if (!process.env["LOVABLE_API_KEY"]) return rule("AI is not configured — showing rule-based result.");
+    const apiKey = process.env["GEMINI_API_KEY"];
+    if (!apiKey) return rule("AI is not configured — showing rule-based result.");
 
     try {
-      const { generateResponse } = await import("@lovable.dev/ai-gateway");
       const catalogue = wearable.map(({ id, name, category, color, season, occasions, brand }) => ({ id, name, category, color, season, occasions, brand }));
-      const resp = await generateResponse({
-        model: "openai/gpt-6-astra",
-        instructions:
-          "You are a fashion stylist. Build ONE outfit using ONLY item ids from the provided wardrobe JSON. Never invent ids. Dress for the weather: above 30°C choose breathable T-shirts, lightweight shirts or shorts; 20–30°C choose T-shirts, shirts, jeans or trousers; 10–19°C choose full-sleeve shirts, sweatshirts or light jackets; below 10°C choose sweaters, hoodies, coats or warm trousers. In rain, prioritize raincoats and waterproof footwear. A typical outfit is top + bottom (or a dress/ethnic one-piece) + footwear. If key pieces are missing, list them in `missing`. Keep reasoning under 60 words, styling suggestions under 50 words. Alternatives: up to 2 other id combinations from the same wardrobe.",
-        input: JSON.stringify({
+      const text = await callGemini(
+        apiKey,
+        JSON.stringify({
           occasion: data.occasion, weather, preferred_colors: data.preferredColors, style: data.style ?? null,
           comfort: data.comfort ?? null, variation_seed: data.variation, wardrobe: catalogue,
         }),
-        text: { format: { type: "json_schema", name: "outfit", schema, strict: true } },
-      });
-      const parsed = JSON.parse(extractText(resp)) as {
+      );
+      const parsed = JSON.parse(text) as {
         selected_item_ids: string[]; reasoning: string; styling_suggestions: string; weather_suitability: string; missing: string[]; alternatives: string[][];
       };
       // Validate ids against the user's real, wearable items.
@@ -95,11 +121,13 @@ export const generateOutfit = createServerFn({ method: "POST" })
       };
     } catch (e) {
       console.error("AI outfit failed", e);
-      const msg = (e as { name?: string }).name === "PaymentRequiredError"
-        ? "AI credits exhausted — showing rule-based result."
-        : (e as { name?: string }).name === "RateLimitError"
+      const status = e instanceof GeminiError ? e.status : 0;
+      const msg =
+        status === 429
           ? "AI is busy right now — showing rule-based result."
-          : "AI unavailable — showing rule-based result.";
+          : status === 400 || status === 401 || status === 403
+            ? "AI key was rejected — showing rule-based result."
+            : "AI unavailable — showing rule-based result.";
       return rule(msg);
     }
   });
